@@ -1,0 +1,11 @@
+**1. Pourquoi séparer `requirements.txt` et `requirements-dev.txt` ?**
+Le premier ne contient que les dépendances nécessaires **en production** (flask, gunicorn). Le second ajoute les outils **de développement uniquement** (pytest, flake8). Ainsi, en prod on n'installe pas les outils de test/lint : image plus légère, surface d'attaque réduite, démarrage plus rapide.
+
+**2. Intérêt de `/health` en DevOps ?**
+C'est un **endpoint de healthcheck** : il permet à un orchestrateur (Docker, Kubernetes, load balancer, CI/CD) de vérifier automatiquement que l'app tourne. Si `/health` ne répond pas 200, l'orchestrateur redémarre le conteneur ou le retire du pool.
+
+**3. Code de retour ≠ 0 ?**
+En Unix/POSIX, `0` = **succès**, tout autre code = **échec** (avec un sens variable : 1 = erreur générique, 2 = mauvaise usage, 127 = commande introuvable…). C'est ce que testent les scripts CI/CD (`if [ $? -ne 0 ]; then exit 1; fi`) et les opérateurs `&&` / `||`.
+
+**4. Pourquoi `curl.exe` et pas `curl` dans PowerShell ?**
+`curl` est un **alias PowerShell** vers `Invoke-WebRequest`, qui n'accepte pas les mêmes options (`-X`, `-H`, `-d`…). Pour appeler le vrai binaire curl (fourni avec Windows 10+), il faut écrire `curl.exe`. On peut aussi supprimer l'alias : `Remove-Item Alias:curl`.
